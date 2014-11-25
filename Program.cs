@@ -5,18 +5,22 @@ namespace ShoppingCartDemo
 {
     class Program
     {
+        static List<Inventory> _inventoryList;
+
+        static Program()
+        {
+            // Set up the initial inventory to purchase
+            InventoryList defaultList = new InventoryList();
+            _inventoryList = defaultList.List;
+        }
+
         static void Main(string[] args)
         {
-            int userInput;
-            int subtotal = 0;
-
-            // Display items for purchasing
-            DisplayPurchaseOptions();
-            userInput = GetPurchaseOption();
-            subtotal = userInput;
+            // Allow user to purchase
+            int subtotal = AllowPurchasing();
 
             // Display the summary of the transaction
-            double tax = (double) subtotal * (0.095);
+            double tax = (double)subtotal * (0.095);
             Console.WriteLine("Subtotal: ${0}", subtotal);
             Console.WriteLine("Tax (9.5%): ${0}", tax);
             Console.WriteLine("Total: ${0}", subtotal + tax);
@@ -26,15 +30,43 @@ namespace ShoppingCartDemo
         }
 
         /// <summary>
+        /// Allow user to keep purchasing stuff
+        /// </summary>
+        static int AllowPurchasing()
+        {
+            int userInput = 0;
+            int subtotal = 0;
+            int listSize = _inventoryList.Count;
+            do
+            {
+                // Display purchase options
+                DisplayPurchaseOptions();
+                userInput = GetPurchaseOption();
+
+                if (userInput < listSize)
+                {
+                    //Update subtotal
+                    subtotal += _inventoryList[(userInput - 1)].Price;
+                }
+            } while (userInput != 4);
+
+            return subtotal;
+        }
+
+        /// <summary>
         /// Display purchase options for user
         /// </summary>
         static void DisplayPurchaseOptions()
         {
+            int listSize = _inventoryList.Count;
             Console.WriteLine("Please choose from the following menu:");
-            Console.WriteLine("1. Apple $1.00");
-            Console.WriteLine("2. Grapes $2.00");
-            Console.WriteLine("3. Mango $3.00");
-            Console.WriteLine("4. Exit");
+
+            //TODO: Put this in a loop
+            Console.WriteLine("1. {0}", _inventoryList[0].DisplayName());
+            Console.WriteLine("2. {0}", _inventoryList[2].DisplayName());
+            Console.WriteLine("3. {0}", _inventoryList[0].DisplayName());
+            Console.WriteLine("4. Finish purchasing");
+
             Console.WriteLine("Which one would you like to purchase?");
         }
 
